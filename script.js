@@ -14,36 +14,29 @@ button.addEventListener("click", async () => {
 
   try {
 
-
-
     const response = await fetch("https://ai-title-api.a1289458763.workers.dev", {
       method: "POST",
       headers: {
-        "Authorization": "Bearer ",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "inclusionai/ring-2.6-1t:free",
-        messages: [
-          {
-            role: "user",
-            content: `Generate 10 viral blog or social media titles about: ${topic}`
-          }
-        ]
+        topic: topic
       })
     });
 
     const data = await response.json();
 
     console.log(data);
-      
-    result.innerHTML = data.choices[0].message.content;
+
+    const text = data?.choices?.[0]?.message?.content || "No result";
+
+    result.innerHTML = text;
 
   } catch (error) {
 
     result.innerHTML = "Error generating titles.";
-
     console.error(error);
+
   }
 
 });
