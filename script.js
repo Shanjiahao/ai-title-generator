@@ -1,42 +1,93 @@
-const button = document.getElementById("generateBtn");
+body {
+  margin: 0;
+  padding: 0;
+  background: #0f172a;
+  font-family: Arial, sans-serif;
+  color: white;
+}
 
-button.addEventListener("click", async () => {
+.container {
+  max-width: 700px;
+  margin: 80px auto;
+  padding: 20px;
+}
 
-  const topic = document.getElementById("topic").value;
-  const result = document.getElementById("result");
+h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
 
-  if (!topic) {
-    alert("Please enter a topic");
-    return;
-  }
+p {
+  color: #94a3b8;
+}
 
-  result.innerHTML = "Generating...";
+/* 输入框 */
+textarea {
+  width: 100%;
+  height: 120px;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  resize: none;
+  background: #1e293b;
+  color: white;
+  outline: none;
+}
 
-  try {
+/* 按钮 */
+button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: #3b82f6;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
 
-    const response = await fetch("https://ai-title-api.a1289458763.workers.dev", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        topic: topic
-      })
-    });
+button:hover {
+  opacity: 0.9;
+}
 
-    const data = await response.json();
+/* 🔥 结果区域（升级成卡片布局） */
+#result {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
 
-    console.log(data);
+/* 单条卡片 */
+.card {
+  background: #1e293b;
+  padding: 14px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    const text = data?.choices?.[0]?.message?.content || "No result";
+.title {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.4;
+}
 
-    result.innerHTML = text;
+/* copy按钮 */
+.copy-btn {
+  background: #334155;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
 
-  } catch (error) {
-
-    result.innerHTML = "Error generating titles.";
-    console.error(error);
-
-  }
-
-});
+.copy-btn:hover {
+  opacity: 0.8;
+}
