@@ -1,93 +1,57 @@
-body {
-  margin: 0;
-  padding: 0;
-  background: #0f172a;
-  font-family: Arial, sans-serif;
-  color: white;
-}
+const button = document.getElementById("generateBtn");
 
-.container {
-  max-width: 700px;
-  margin: 80px auto;
-  padding: 20px;
-}
+button.addEventListener("click", async () => {
 
-h1 {
-  font-size: 48px;
-  margin-bottom: 10px;
-}
+  const topic = document.getElementById("topic").value;
+  const result = document.getElementById("result");
 
-p {
-  color: #94a3b8;
-}
+  if (!topic) {
+    alert("Please enter a topic");
+    return;
+  }
 
-/* 输入框 */
-textarea {
-  width: 100%;
-  height: 120px;
-  padding: 15px;
-  margin-top: 20px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-  resize: none;
-  background: #1e293b;
-  color: white;
-  outline: none;
-}
+  result.innerHTML = "Generating...";
 
-/* 按钮 */
-button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 12px;
-  background: #3b82f6;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-}
+  try {
 
-button:hover {
-  opacity: 0.9;
-}
+    const response = await fetch("https://ai-title-api.a1289458763.workers.dev", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        topic: topic
+      })
+    });
 
-/* 🔥 结果区域（升级成卡片布局） */
-#result {
-  margin-top: 30px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
+    const data = await response.json();
 
-/* 单条卡片 */
-.card {
-  background: #1e293b;
-  padding: 14px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    const text = data?.choices?.[0]?.message?.content || "";
 
-.title {
-  flex: 1;
-  font-size: 15px;
-  line-height: 1.4;
-}
+    // 👉 把 AI 输出拆成数组（每行一个标题）
+    const titles = text
+      .split("\n")
+      .map(t => t.replace(/^\d+[\.\-\)\s]*/, "").trim())
+      .filter(Boolean);
 
-/* copy按钮 */
-.copy-btn {
-  background: #334155;
-  border: none;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 12px;
-}
+    // 👉 渲染卡片
+    result.innerHTML = titles.map(title => `
+      <div class="card">
+        <div class="title">${title}</div>
+        <button class="copy-btn" onclick="copyText('${title.replace(/'/g, "\\'")}')">
+          Copy
+        </button>
+      </div>
+    `).join("");
 
-.copy-btn:hover {
-  opacity: 0.8;
+  } catch (error) {
+    console.error(error);
+    result.innerHTML = "Error generating titles.";
+  }
+
+});
+
+// 一键复制
+function copyText(text) {
+  navigator.clipboard.writeText(text);
 }
